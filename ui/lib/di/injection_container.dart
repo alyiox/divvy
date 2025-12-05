@@ -2,9 +2,9 @@ import 'package:divvy_api_client/divvy_api_client.dart';
 import 'package:get_it/get_it.dart';
 
 import '../core/services/token_storage_service.dart';
-import '../data/repositories/auth_repository_impl.dart';
-import '../data/sources/remote_auth_data_source.dart';
-import '../domain/repositories/auth_repository.dart';
+import '../data/repositories/index.dart';
+import '../data/sources/index.dart';
+import '../domain/repositories/index.dart';
 import 'api_client_factory.dart';
 
 final it = GetIt.instance;
@@ -33,10 +33,12 @@ void _configureApiClients() {
 void _configureDataSources() {
   DivvyApiClient publicApiClient = it<DivvyApiClient>(instanceName: 'public');
   it.registerSingleton<RemoteAuthDataSource>(RemoteAuthDataSource(apiClient: publicApiClient));
+  it.registerSingleton<RemoteUserDataSource>(RemoteUserDataSource(apiClient: publicApiClient));
 }
 
 void _configureRepositories() {
   it.registerSingleton<AuthRepository>(AuthRepositoryImpl(remoteAuthDataSource: it<RemoteAuthDataSource>()));
+  it.registerSingleton<UserRepository>(UserRepositoryImpl(remoteUserDataSource: it<RemoteUserDataSource>()));
 }
 
 void _configurePresentations() {}
