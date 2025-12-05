@@ -38,7 +38,7 @@ openapi-generator-cli generate \
     -i "$OPENAPI_SPEC" \
     -g dart-dio \
     -o "$OUTPUT_DIR" \
-    --additional-properties=serializationLibrary=json_serializable,pubName=divvy_api_client,pubDescription="Divvy API Client",pubVersion="0.0.1"
+    --additional-properties=pubName=divvy_api_client,pubDescription="Divvy API Client",pubVersion="0.0.1"
 
 echo "✅ API client generated."
 
