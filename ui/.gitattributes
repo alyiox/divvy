@@ -1,0 +1,5 @@
+# Flutter/Dart generated files
+*.freezed.dart -diff -merge linguist-generated=true
+*.g.dart -diff -merge linguist-generated=true
+*.gr.dart -diff -merge linguist-generated=true
+*.chopper.dart -diff -merge linguist-generated=true

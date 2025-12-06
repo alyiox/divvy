@@ -3,6 +3,10 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     - packages/**
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+  errors:
+    invalid_annotation_target: ignore
 
 format:
   line_length: 120
