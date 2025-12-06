@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../core/services/token_storage_service.dart';
 import '../../../di/injection_container.dart';
@@ -7,41 +8,31 @@ import '../../auth/view_model/logout_view_model.dart';
 import '../../auth/widgets/welcome_screen.dart';
 
 /// Simple home screen widget.
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => LogoutViewModel(authRepository: it<AuthRepository>(), tokenStorage: it<TokenStorageService>()),
+      child: const _HomeScreenContent(),
+    );
+  }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  late final LogoutViewModel _logoutViewModel;
+class _HomeScreenContent extends StatelessWidget {
+  const _HomeScreenContent();
 
-  @override
-  void initState() {
-    super.initState();
-    _logoutViewModel = LogoutViewModel(authRepository: it<AuthRepository>(), tokenStorage: it<TokenStorageService>());
-    _logoutViewModel.addListener(_onLogoutViewModelChanged);
-  }
+  Future<void> _handleLogout(BuildContext context, LogoutViewModel viewModel) async {
+    final success = await viewModel.logout();
 
-  @override
-  void dispose() {
-    _logoutViewModel.removeListener(_onLogoutViewModelChanged);
-    super.dispose();
-  }
-
-  void _onLogoutViewModelChanged() {
-    if (_logoutViewModel.errorMessage != null) {
+    if (!success && viewModel.errorMessage != null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(_logoutViewModel.errorMessage!), backgroundColor: Colors.red));
+      ).showSnackBar(SnackBar(content: Text(viewModel.errorMessage!), backgroundColor: Colors.red));
     }
-  }
 
-  Future<void> _handleLogout() async {
-    final success = await _logoutViewModel.logout();
-
-    if (success && mounted) {
+    if (success) {
       Navigator.of(
         context,
       ).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => const WelcomeScreen()), (route) => false);
@@ -50,18 +41,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Divvy')),
-      body: Center(
-        child: ElevatedButton.icon(
-          onPressed: _logoutViewModel.isLoading ? null : _handleLogout,
-          icon: _logoutViewModel.isLoading
-              ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
-              : const Icon(Icons.logout),
-          label: const Text('Logout'),
-          style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24)),
-        ),
-      ),
+    return Consumer<LogoutViewModel>(
+      builder: (context, viewModel, child) {
+        return Scaffold(
+          appBar: AppBar(title: const Text('Divvy')),
+          body: Center(
+            child: ElevatedButton.icon(
+              onPressed: viewModel.isLoading ? null : () => _handleLogout(context, viewModel),
+              icon: viewModel.isLoading
+                  ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.logout),
+              label: const Text('Logout'),
+              style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24)),
+            ),
+          ),
+        );
+      },
     );
   }
 }
