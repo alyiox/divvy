@@ -5,6 +5,7 @@ import '../core/services/token_storage_service.dart';
 import '../data/repositories/index.dart';
 import '../data/sources/index.dart';
 import '../domain/repositories/index.dart';
+import '../ui/auth/view_model/index.dart';
 import 'api_client_factory.dart';
 
 final it = GetIt.instance;
@@ -45,4 +46,17 @@ void _configureRepositories() {
   it.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(remoteUserDataSource: it<RemoteUserDataSource>()));
 }
 
-void _configurePresentations() {}
+void _configurePresentations() {
+  // Register ViewModels as factories so each screen gets a new instance
+  it.registerFactory<LoginViewModel>(
+    () => LoginViewModel(authRepository: it<AuthRepository>(), tokenStorage: it<TokenStorageService>()),
+  );
+
+  it.registerFactory<RegisterViewModel>(
+    () => RegisterViewModel(authRepository: it<AuthRepository>(), tokenStorage: it<TokenStorageService>()),
+  );
+
+  it.registerFactory<LogoutViewModel>(
+    () => LogoutViewModel(authRepository: it<AuthRepository>(), tokenStorage: it<TokenStorageService>()),
+  );
+}

@@ -23,4 +23,9 @@ class AuthRepositoryImpl extends AuthRepository {
   Future<Result<AuthTokens, Exception>> refreshTokens(String refreshToken) async {
     return _remoteAuthDataSource.refreshTokens(refreshToken);
   }
+
+  @override
+  Future<Result<void, Exception>> logout(String refreshToken) async {
+    return _remoteAuthDataSource.revokeToken(refreshToken);
+  }
 }

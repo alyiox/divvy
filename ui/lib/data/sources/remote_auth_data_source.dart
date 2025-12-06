@@ -71,4 +71,20 @@ class RemoteAuthDataSource {
       return Result.error(Exception('Unexpected error during token refresh: $e'));
     }
   }
+
+  Future<Result<void, Exception>> revokeToken(String refreshToken) async {
+    try {
+      final response = await apiClient.getAuthenticationApi().revokeTokenApiV1AuthRevokePost(token: refreshToken);
+
+      if (response.statusCode != 200) {
+        return Result.error(Exception('Failed to revoke token: ${response.statusCode}'));
+      }
+
+      return Result.ok(null);
+    } on DioException catch (e) {
+      return Result.error(Exception('Failed to revoke token: ${e.message}'));
+    } catch (e) {
+      return Result.error(Exception('Unexpected error during token revocation: $e'));
+    }
+  }
 }
