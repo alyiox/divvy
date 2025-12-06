@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 import 'login_screen.dart';
 import 'register_screen.dart';
@@ -22,6 +23,8 @@ class WelcomeScreen extends StatelessWidget {
   void _handleMicrosoftSignIn() {
     // TODO: Implement Microsoft OAuth flow
   }
+
+  void _handleAppleSignIn() {}
 
   @override
   Widget build(BuildContext context) {
@@ -48,18 +51,28 @@ class WelcomeScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 48),
-                ElevatedButton.icon(
+                SignInButton(
+                  Buttons.Google,
                   onPressed: _handleGoogleSignIn,
-                  icon: const Icon(Icons.g_mobiledata, size: 24),
-                  label: const Text('Continue with Google'),
-                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                  elevation: 1,
                 ),
                 const SizedBox(height: 12),
-                ElevatedButton.icon(
+                SignInButton(
+                  Buttons.Microsoft,
                   onPressed: _handleMicrosoftSignIn,
-                  icon: const Icon(Icons.window, size: 24),
-                  label: const Text('Continue with Microsoft'),
-                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                  elevation: 1,
+                ),
+                const SizedBox(height: 12),
+                SignInButton(
+                  Buttons.AppleDark,
+                  onPressed: _handleAppleSignIn,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                  elevation: 1,
                 ),
                 const SizedBox(height: 24),
                 const Row(
