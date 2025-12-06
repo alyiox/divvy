@@ -8,6 +8,7 @@ import '../domain/repositories/index.dart';
 import 'api_client_factory.dart';
 
 final it = GetIt.instance;
+
 void configureDependencies() {
   _configureCoreServices();
   _configureApiClients();
@@ -21,24 +22,27 @@ void _configureCoreServices() {
 }
 
 void _configureApiClients() {
-  it.registerLazySingleton<DivvyApiClient>(() => ApiClientFactory.createPublicApiClient());
+  it.registerLazySingleton<DivvyApiClient>(() => ApiClientFactory.createPublicApiClient(), instanceName: 'public');
 
   it.registerLazySingleton(() {
     final tokenStorage = it<TokenStorageService>();
     final tokenRefresher = it<AuthRepository>();
     return ApiClientFactory.createAuthApiClient(tokenStorage: tokenStorage, tokenRefresher: tokenRefresher);
-  });
+  }, instanceName: 'auth');
 }
 
 void _configureDataSources() {
-  DivvyApiClient publicApiClient = it<DivvyApiClient>(instanceName: 'public');
-  it.registerSingleton<RemoteAuthDataSource>(RemoteAuthDataSource(apiClient: publicApiClient));
-  it.registerSingleton<RemoteUserDataSource>(RemoteUserDataSource(apiClient: publicApiClient));
+  it.registerLazySingleton<RemoteAuthDataSource>(
+    () => RemoteAuthDataSource(apiClient: it<DivvyApiClient>(instanceName: 'public')),
+  );
+  it.registerLazySingleton<RemoteUserDataSource>(
+    () => RemoteUserDataSource(apiClient: it<DivvyApiClient>(instanceName: 'auth')),
+  );
 }
 
 void _configureRepositories() {
-  it.registerSingleton<AuthRepository>(AuthRepositoryImpl(remoteAuthDataSource: it<RemoteAuthDataSource>()));
-  it.registerSingleton<UserRepository>(UserRepositoryImpl(remoteUserDataSource: it<RemoteUserDataSource>()));
+  it.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteAuthDataSource: it<RemoteAuthDataSource>()));
+  it.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(remoteUserDataSource: it<RemoteUserDataSource>()));
 }
 
 void _configurePresentations() {}
